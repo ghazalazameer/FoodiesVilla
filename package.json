@@ -1,0 +1,23 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "myFirstReactApp",
+  "main": "script.js",
+  "scripts": {
+    "test": "npm run dev",
+    "start": "parcel",
+    "build":"parcel build"
+
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "parcel": "^2.11.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "process": "^0.11.10"
+  }
+}
