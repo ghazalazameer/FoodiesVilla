@@ -22,8 +22,6 @@
 
 # React-WebApp
 
-/\*\*
-
 - Header
 - - Logo
 - - Nav Items
@@ -38,7 +36,6 @@
 - - Links
 - - Address
 - - Contact
-    \*/
 
 Two types of Export/Import
 
