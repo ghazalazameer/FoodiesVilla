@@ -70,7 +70,7 @@ import {Component} from "path";
 - dispatch(action)
 - Selector
 
-# Types of testing (devloper)
+# Types of testing (developer)
 
 - Unit Testing
 - Integration Testing

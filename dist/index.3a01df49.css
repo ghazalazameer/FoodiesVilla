@@ -1,3 +1,10 @@
+.body {
+  background-color: #ffebcd;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, sans-serif;
+}
+
 .header {
   border: 1px solid #000;
   justify-content: space-between;
@@ -6,7 +13,8 @@
 }
 
 .logo {
-  width: 80px;
+  width: 100px;
+  margin: 10px;
 }
 
 .nav-items {
@@ -31,8 +39,8 @@
 
 .res-card {
   width: 200px;
-  height: 400px;
-  margin: auto;
+  height: 410px;
+  margin: 10px;
   padding: 10px;
 }
 
@@ -55,11 +63,12 @@
 }
 
 .shimmer-container {
+  flex-wrap: wrap;
   display: flex;
 }
 
 .shimmer-card {
-  background-color: #dcd2d2;
+  background-color: gray;
   width: 200px;
   height: 400px;
   margin: 20px;
@@ -72,6 +81,11 @@
 
 .filter {
   display: flex;
+}
+
+.user-card {
+  border: 1px solid #000;
+  padding: 10px;
 }
 
 /*# sourceMappingURL=index.3a01df49.css.map */
