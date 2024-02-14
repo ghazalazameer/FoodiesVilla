@@ -1,7 +1,8 @@
-import RestaurantCard from "./RestaurantCard";
+import RestaurantCard, {withPromotedLabel} from "./RestaurantCard";
 // import resList from "../utils/mockData";
 import {useEffect, useState} from "react";
 import Shimmer from "./Shimmer";
+import {Link} from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus";
 
 
@@ -13,6 +14,7 @@ const Body = () => {
     const [listOfRestaurants, setListOfRestaurants] = useState([]);
     const [filteredRestaurant, setFilteredRestaurant] = useState([]);
     const [searchtext, setsearchtext] = useState("");
+    const RestaurantCardPromoted = withPromotedLabel(RestaurantCard);
     // console.log("Body rendered"); //for debugging purpose re render the component
     //whenever state variable update, react triggers a reconciliation cycle (re-render the component)
     //useEffect hook to fetch data from API
@@ -49,40 +51,53 @@ if (onlineStatus === false) return (
 );
 
     return listOfRestaurants.length === 0 ? <Shimmer/> : (
-        <div className="">
+        <div className="body">
             <div className="filter flex">
-                <div className="search m-4 p-4 relative text-gray-600">
-                <input type ="text" className="border border-solid border-black" value={searchtext}
+                <div className="search m-4 p-4">
+                    <input type ="text" className="border border-solid border-black" value={searchtext}
                 onChange={(e)=>{
                     setsearchtext(e.target.value);
                 }}
                  />
-                <button className="px-4 py-1 bg-green-100 m-4 rounded-lg" 
-                onClick={()=>
-                {
+                  
+                <button className="px-4 py-2 ml-3 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-400 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80" 
+                onClick={()=>{
+                    //filter the restaurant cards and update the UI
+                    //search text
                   const filteredRestaurant=  listOfRestaurants.filter((res)=> res.info.name.toLowerCase().includes(searchtext.toLowerCase()));
 
                     setFilteredRestaurant(filteredRestaurant);
                     //filtering the list of restaurants based on search input
                 }}>Search</button>
-             
-                   </div>
-                <div className="search m-4 p-4">
-                <button className="px-4 py-1 bg-gray-100 m-4 rounded-lg" onClick={() => {
+                </div>
+
+                <div className="search m-4 p-4 flex items-center"> 
+                <button className="px-4 py-2 ml-3 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-green-400 rounded-lg hover:bg-green-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80"
+                onClick={() => {
                     const filteredList = listOfRestaurants.filter(
                         (res) => res.info.avgRating > 4 );
                     setFilteredRestaurant(filteredList);
                 }}       
                 >Top Rated Restaurants</button>
                 </div>
-            </div>
-            <div className="flex flex-wrap">
+                </div>
+            <div className="flex flex-wrap bg-gradient-to-r from-zinc-50 to-orange-100">
            
 
                 {filteredRestaurant.map((restaurant) => (
-                    <RestaurantCard key={restaurant.info.id} resData={restaurant} />
+                //    <Link to ={"/restaurants/"+restaurant.info.id}><RestaurantCard key={restaurant.info.id} resData={restaurant}/></Link>
+                // ))}
+                <Link key ={restaurant.info.id} to={"/restaurants/" + restaurant.info.id}
+                >
+                    {restaurant.info.promoted ? (
+                        <RestaurantCardPromoted resData={restaurant} />
+                    ) : (
+                        <RestaurantCard resData={restaurant} />
+                    )}
+                    </Link>
                 ))}
                 </div>
+                
         </div>
     ); 
 };

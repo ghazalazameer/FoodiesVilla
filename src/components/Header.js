@@ -2,12 +2,16 @@ import { LOGO_URL } from "../utils/constants";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus";
+import UserContext from "../utils/UserContext";
 
 const Header = () => {
     let btnName="Login";
     // useState comes with its var name and the function that will update it resp. ["",""]
     const [btnNameReact, setBtnNameReact]=useState("Login");
     const onlineStatus = useOnlineStatus();
+    const {loggedInUser}=useContext(UserContext);
+    console.log(loggedInUser);
+
     return (
         <div className="flex justify-between h-20 shadow-lg">
             <div className="logo-container">
