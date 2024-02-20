@@ -1,174 +1,143 @@
-// react is imported from the node_modules not from the cdn script we have used in html file earlier
-import React, { lazy, Suspense } from "react";
-import ReactDOM from "react-dom/client"; 
+import React, {lazy,Suspense, useEffect,useState} from "react";
+import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
 import Body from "./components/Body";
-import About from "./components/About";
-import Contact from "./components/Contact";
-import Error from "./components/error";
-import RestaurantMenu from "./components/RestaurantMenu";
-import {createBrowserRouter, RouterProvider, Outlet} from "react-router-dom";
+// import About from "./Components/About";
+import Contact from "./Components/Contact";
+import Error from "./Components/Error";
+import RestaurantMenu from "./Components/RestaurantMenu";
+import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom";
+import UserContext from "./utils/UserContext";
+// import Grocery from "./Components/Grocery";
+import {Provider} from "react-redux";
+import appStore from "./utils/appStore";
 
-const Grocery = lazy(()=>import("./components/Grocery"));
+//chunking
+//code splitting
+//dynamic bundling
+// lazy loading
+//on demand loading
+//dynamic loading
+
+const Grocery = lazy(()=>import("./components/Grocery"))
+const About = lazy(()=>import("./components/About"))
 
 const Footer = () => {
-  const year = new Date().getFullYear();
+  // const year = new Date().getFullYear();
   return (
-<div class="flex items-end w-full min-h-screen bg-white">
-
-    <footer class="w-full text-gray-700 bg-gray-100 body-font">
-        <div
-            class="container flex flex-col flex-wrap px-5 py-24 mx-auto md:items-center lg:items-start md:flex-row md:flex-no-wrap">
-            <div class="flex-shrink-0 w-64 mx-auto text-center md:mx-0 md:text-left">
-                <a class="flex items-center justify-center font-medium text-gray-900 title-font md:justify-start">
-                    <svg class="w-auto h-5 text-gray-900 fill-current" viewBox="0 0 202 69"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M57.44.672s6.656 1.872 6.656 5.72c0 0-1.56 2.6-3.744 6.552 8.424 1.248 16.744 1.248 23.816-1.976-1.352 7.904-12.688 8.008-26.208 6.136-7.696 13.624-19.656 36.192-19.656 42.848 0 .416.208.624.52.624 4.576 0 17.888-14.352 21.112-18.824 1.144-1.456 4.264.728 3.12 2.392C56.608 53.088 42.152 69 36.432 69c-4.472 0-8.216-5.928-8.216-10.4 0-6.552 11.752-28.08 20.28-42.952-9.984-1.664-20.176-3.64-27.976-3.848-13.936 0-16.64 3.536-17.576 6.032-.104.312-.52.52-.832.312-3.744-7.072-1.456-14.56 14.144-14.56 9.36 0 22.048 4.576 34.944 7.592C54.736 5.04 57.44.672 57.44.672zm46.124 41.08c1.144-1.456 4.264.728 3.016 2.392C100.236 53.088 85.78 69 80.06 69c-4.576 0-8.32-5.928-8.32-10.4v-.208C67.58 64.32 63.524 69 61.34 69c-4.472 0-8.944-4.992-8.944-11.856 0-10.608 15.704-33.072 24.96-33.072 4.992 0 7.384 2.392 8.528 4.576l2.6-4.576s6.656 1.976 6.656 5.824c0 0-13.312 24.336-13.312 30.056 0 .208 0 .624.52.624 4.472 0 17.888-14.352 21.216-18.824zm-40.56 18.72c2.184 0 11.752-13.312 17.368-22.048l4.16-7.488c-8.008-7.904-27.248 29.536-21.528 29.536zm57.564-38.168c-2.184 0-4.992-2.808-4.992-4.784 0-2.912 5.824-14.872 7.28-14.872 2.6 0 6.136 2.808 6.136 6.344 0 2.08-7.176 12.064-8.424 13.312zm-17.68 46.592c-4.472 0-8.216-5.928-8.216-10.4 0-6.656 16.744-34.528 16.744-34.528s6.552 1.976 6.552 5.824c0 0-13.312 24.336-13.312 30.056 0 .208.104.624.624.624 4.472 0 17.888-14.352 21.112-18.824 1.144-1.456 4.264.728 3.12 2.392-6.448 8.944-20.904 24.856-26.624 24.856zM147.244.672s6.656 1.872 6.656 5.72c0 0-25.792 43.784-25.792 53.56 0 .416.208.624.52.624 4.576 0 17.888-14.352 21.112-18.824 1.144-1.456 4.264.728 3.12 2.392C146.412 53.088 131.956 69 126.236 69c-4.472 0-8.216-5.928-8.216-10.4 0-10.4 29.224-57.928 29.224-57.928zM169.7 60.16c3.848-2.392 7.904-6.864 10.816-10.92 6.656-9.464 11.544-20.696 10.504-27.352-.312-3.432-.104-4.056 3.12-2.704 5.2 2.392 11.336 8.632 2.184 22.88-5.2 8.008-12.48 15.288-19.344 19.76-2.704 1.768-6.344 3.328-9.984 4.16-.52.416-1.04.728-1.456.936-1.872 1.352-4.264 2.08-7.592 2.08-14.664 0-16.848-12.272-16.848-16.016 0-2.392 3.224-4.68 4.784-3.744.208.104.312.416.312.624 0 2.808 1.872 13.104 9.984 13.104 7.904 0 3.432-18.304 2.288-27.144-1.456 2.288-3.432 4.992-5.616 8.32-2.6 3.744-5.72 1.456-4.784 0 5.824-8.424 9.152-13.832 11.856-18.616 1.248-2.08 3.328-3.328 6.448-3.328 2.704 0 5.824 3.016 6.864 4.784.312.52 0 1.04-.52 1.144a5.44 5.44 0 00-4.368 5.408c0 6.968 2.6 17.16 1.664 24.856l-.312 1.768z"
-                            fill-rule="nonzero" /></svg>
-                </a>
-                <p class="mt-2 text-sm text-gray-500">Design, Code, Eat and Repeat!</p>
-                <div class="mt-4">
-                    <span class="inline-flex justify-center mt-2 sm:ml-auto sm:mt-0 sm:justify-start">
-                        <a class="text-gray-500 cursor-pointer hover:text-gray-700">
-                            <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                class="w-5 h-5" viewBox="0 0 24 24">
-                                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-                            </svg>
-                        </a>
-                        <a class="ml-3 text-gray-500 cursor-pointer hover:text-gray-700">
-                            <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                class="w-5 h-5" viewBox="0 0 24 24">
-                                <path
-                                    d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z">
-                                </path>
-                            </svg>
-                        </a>
-                        <a class="ml-3 text-gray-500 cursor-pointer hover:text-gray-700">
-                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
-                                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
-                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
-                            </svg>
-                        </a>
-                        <a class="ml-3 text-gray-500 cursor-pointer hover:text-gray-700">
-                            <svg fill="currentColor" stroke="currentColor" stroke-linecap="round"
-                                stroke-linejoin="round" stroke-width="0" class="w-5 h-5" viewBox="0 0 24 24">
-                                <path stroke="none"
-                                    d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z">
-                                </path>
-                                <circle cx="4" cy="4" r="2" stroke="none"></circle>
-                            </svg>
-                        </a>
-                    </span>
-                </div>
-            </div>
-            <div class="flex flex-wrap flex-grow mt-10 -mb-10 text-center md:pl-20 md:mt-0 md:text-left">
-                <div class="w-full px-4 lg:w-1/4 md:w-1/2">
-                    <h2 class="mb-3 text-sm font-medium tracking-widest text-gray-900 uppercase title-font">About</h2>
-                    <nav class="mb-10 list-none">
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">Company</a>
-                        </li>
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">Restaurants</a>
-                        </li>
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">Blog</a>
-                        </li>
-                    </nav>
-                </div>
-               
-                <div class="w-full px-4 lg:w-1/4 md:w-1/2">
-                    <h2 class="mb-3 text-sm font-medium tracking-widest text-gray-900 uppercase title-font">Platform
-                    </h2>
-                    <nav class="mb-10 list-none">
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">Terms &amp; Privacy</a>
-                        </li>
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">Pricing</a>
-                        </li>
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">FAQ</a>
-                        </li>
-                    </nav>
-                </div>
-                <div class="w-full px-4 lg:w-1/4 md:w-1/2">
-                    <h2 class="mb-3 text-sm font-medium tracking-widest text-gray-900 uppercase title-font">Contact</h2>
-                    <nav class="mb-10 list-none">
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">Send a Message</a>
-                        </li>
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">Request a Quote</a>
-                        </li>
-                        <li class="mt-3">
-                            <a class="text-gray-500 cursor-pointer hover:text-gray-900">+123-456-7890</a>
-                        </li>
-                    </nav>
-                </div>
-            </div>
-        </div>
-        <div class="bg-gray-300">
-            <div class="container px-5 py-4 mx-auto">
-                <p class="text-sm text-gray-700 capitalize xl:text-center">© 2024 All rights reserved </p>
-            </div>
-        </div>
-    </footer>
-
-</div>
+<footer className="dark:bg-gray-800 dark:text-gray-50">
+	<div className="container flex flex-col p-4 mx-auto md:p-8 lg:flex-row dark:divide-gray-400">
+		<ul className="self-center py-6 space-y-4 text-center sm:flex sm:space-y-0 sm:justify-around sm:space-x-4 lg:flex-1 lg:justify-start">
+			<li>Shop</li>
+			<li>About</li>
+			<li>Blog</li>
+			<li>Pricing</li>
+			<li>Contact</li>
+		</ul>
+		<div className="flex flex-col justify-center pt-6 lg:pt-0">
+			<div className="flex justify-center space-x-4">
+				<a rel="noopener noreferrer" href="#" title="Instagram" className="flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 dark:bg-violet-400 dark:text-gray-900">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" className="w-4 h-4">
+						<path d="M16 0c-4.349 0-4.891 0.021-6.593 0.093-1.709 0.084-2.865 0.349-3.885 0.745-1.052 0.412-1.948 0.959-2.833 1.849-0.891 0.885-1.443 1.781-1.849 2.833-0.396 1.020-0.661 2.176-0.745 3.885-0.077 1.703-0.093 2.244-0.093 6.593s0.021 4.891 0.093 6.593c0.084 1.704 0.349 2.865 0.745 3.885 0.412 1.052 0.959 1.948 1.849 2.833 0.885 0.891 1.781 1.443 2.833 1.849 1.020 0.391 2.181 0.661 3.885 0.745 1.703 0.077 2.244 0.093 6.593 0.093s4.891-0.021 6.593-0.093c1.704-0.084 2.865-0.355 3.885-0.745 1.052-0.412 1.948-0.959 2.833-1.849 0.891-0.885 1.443-1.776 1.849-2.833 0.391-1.020 0.661-2.181 0.745-3.885 0.077-1.703 0.093-2.244 0.093-6.593s-0.021-4.891-0.093-6.593c-0.084-1.704-0.355-2.871-0.745-3.885-0.412-1.052-0.959-1.948-1.849-2.833-0.885-0.891-1.776-1.443-2.833-1.849-1.020-0.396-2.181-0.661-3.885-0.745-1.703-0.077-2.244-0.093-6.593-0.093zM16 2.88c4.271 0 4.781 0.021 6.469 0.093 1.557 0.073 2.405 0.333 2.968 0.553 0.751 0.291 1.276 0.635 1.844 1.197 0.557 0.557 0.901 1.088 1.192 1.839 0.22 0.563 0.48 1.411 0.553 2.968 0.072 1.688 0.093 2.199 0.093 6.469s-0.021 4.781-0.099 6.469c-0.084 1.557-0.344 2.405-0.563 2.968-0.303 0.751-0.641 1.276-1.199 1.844-0.563 0.557-1.099 0.901-1.844 1.192-0.556 0.22-1.416 0.48-2.979 0.553-1.697 0.072-2.197 0.093-6.479 0.093s-4.781-0.021-6.48-0.099c-1.557-0.084-2.416-0.344-2.979-0.563-0.76-0.303-1.281-0.641-1.839-1.199-0.563-0.563-0.921-1.099-1.197-1.844-0.224-0.556-0.48-1.416-0.563-2.979-0.057-1.677-0.084-2.197-0.084-6.459 0-4.26 0.027-4.781 0.084-6.479 0.083-1.563 0.339-2.421 0.563-2.979 0.276-0.761 0.635-1.281 1.197-1.844 0.557-0.557 1.079-0.917 1.839-1.199 0.563-0.219 1.401-0.479 2.964-0.557 1.697-0.061 2.197-0.083 6.473-0.083zM16 7.787c-4.541 0-8.213 3.677-8.213 8.213 0 4.541 3.677 8.213 8.213 8.213 4.541 0 8.213-3.677 8.213-8.213 0-4.541-3.677-8.213-8.213-8.213zM16 21.333c-2.948 0-5.333-2.385-5.333-5.333s2.385-5.333 5.333-5.333c2.948 0 5.333 2.385 5.333 5.333s-2.385 5.333-5.333 5.333zM26.464 7.459c0 1.063-0.865 1.921-1.923 1.921-1.063 0-1.921-0.859-1.921-1.921 0-1.057 0.864-1.917 1.921-1.917s1.923 0.86 1.923 1.917z"></path>
+					</svg>
+				</a>
+				<a rel="noopener noreferrer" href="#" title="Pinterest" className="flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 dark:bg-violet-400 dark:text-gray-900">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" className="w-4 h-4">
+						<path d="M16.021 0c-8.828 0-15.984 7.156-15.984 15.984 0 6.771 4.214 12.552 10.161 14.88-0.141-1.266-0.266-3.203 0.052-4.583 0.292-1.25 1.875-7.943 1.875-7.943s-0.479-0.964-0.479-2.375c0-2.219 1.292-3.88 2.891-3.88 1.365 0 2.026 1.021 2.026 2.25 0 1.37-0.87 3.422-1.323 5.323-0.38 1.589 0.797 2.885 2.365 2.885 2.839 0 5.026-2.995 5.026-7.318 0-3.813-2.75-6.49-6.677-6.49-4.547 0-7.214 3.417-7.214 6.932 0 1.375 0.526 2.854 1.188 3.651 0.13 0.161 0.146 0.302 0.109 0.464-0.12 0.5-0.391 1.599-0.443 1.818-0.073 0.297-0.229 0.359-0.536 0.219-1.99-0.922-3.245-3.839-3.245-6.193 0-5.036 3.667-9.672 10.563-9.672 5.542 0 9.854 3.958 9.854 9.229 0 5.516-3.474 9.953-8.307 9.953-1.62 0-3.141-0.839-3.677-1.839l-1 3.797c-0.359 1.391-1.339 3.135-2 4.193 1.5 0.458 3.078 0.714 4.734 0.714 8.813 0 15.979-7.151 15.979-15.984 0-8.828-7.167-15.979-15.979-15.979z"></path>
+					</svg>
+				</a>
+				<a rel="noopener noreferrer" href="#" title="Twitter" className="flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 dark:bg-violet-400 dark:text-gray-900">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" className="w-4 h-4">
+						<path d="M31.937 6.093c-1.177 0.516-2.437 0.871-3.765 1.032 1.355-0.813 2.391-2.099 2.885-3.631-1.271 0.74-2.677 1.276-4.172 1.579-1.192-1.276-2.896-2.079-4.787-2.079-3.625 0-6.563 2.937-6.563 6.557 0 0.521 0.063 1.021 0.172 1.495-5.453-0.255-10.287-2.875-13.52-6.833-0.568 0.964-0.891 2.084-0.891 3.303 0 2.281 1.161 4.281 2.916 5.457-1.073-0.031-2.083-0.328-2.968-0.817v0.079c0 3.181 2.26 5.833 5.26 6.437-0.547 0.145-1.131 0.229-1.724 0.229-0.421 0-0.823-0.041-1.224-0.115 0.844 2.604 3.26 4.5 6.14 4.557-2.239 1.755-5.077 2.801-8.135 2.801-0.521 0-1.041-0.025-1.563-0.088 2.917 1.86 6.36 2.948 10.079 2.948 12.067 0 18.661-9.995 18.661-18.651 0-0.276 0-0.557-0.021-0.839 1.287-0.917 2.401-2.079 3.281-3.396z"></path>
+					</svg>
+				</a>
+				<a rel="noopener noreferrer" href="#" title="Facebook" className="flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 dark:bg-violet-400 dark:text-gray-900">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" className="w-4 h-4">
+						<path d="M32 16c0-8.839-7.167-16-16-16-8.839 0-16 7.161-16 16 0 7.984 5.849 14.604 13.5 15.803v-11.177h-4.063v-4.625h4.063v-3.527c0-4.009 2.385-6.223 6.041-6.223 1.751 0 3.584 0.312 3.584 0.312v3.937h-2.021c-1.984 0-2.604 1.235-2.604 2.5v3h4.437l-0.713 4.625h-3.724v11.177c7.645-1.199 13.5-7.819 13.5-15.803z"></path>
+					</svg>
+				</a>
+				<a rel="noopener noreferrer" href="#" title="Gmail" className="flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 dark:bg-violet-400 dark:text-gray-900">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" className="w-4 h-4">
+						<path d="M16.318 13.714v5.484h9.078c-0.37 2.354-2.745 6.901-9.078 6.901-5.458 0-9.917-4.521-9.917-10.099s4.458-10.099 9.917-10.099c3.109 0 5.193 1.318 6.38 2.464l4.339-4.182c-2.786-2.599-6.396-4.182-10.719-4.182-8.844 0-16 7.151-16 16s7.156 16 16 16c9.234 0 15.365-6.49 15.365-15.635 0-1.052-0.115-1.854-0.255-2.651z"></path>
+					</svg>
+				</a>
+			</div>
+		</div>
+	</div>
+</footer>
   );
 };
 
-const AppLayout=()=>{
-  return(
-    <div className="app">
+//react.Fragment is used to wrap multiple components
+//JSX can have only one parent element
+const AppLayout = () => {
+  const[userName, setUserName] = useState();
+
+  //Authentication
+  useEffect(()=>{
+    //Make an API call and send username and password
+    const data = {
+      name: "ExWhyZed"
+    }
+    setUserName(data.name);
+  },[]);
+  return (
+    <Provider store={appStore}>
+    
+        <div className="app">
+          <UserContext.Provider value={{loggedInUser: userName, setUserName}}> 
       <Header />
-      <Outlet/>
-      <Footer/>
-    </div>
+      </UserContext.Provider>
+      <Outlet />
+      <Footer />
+        </div>
+        </Provider>
+   
+    
   );
 };
-const appRouter=createBrowserRouter([
-  {
-    path:"/",
-    element:<AppLayout/>,
-    children:[
-      {
-        path:"/",
-        element:<Body/>,
-      },
-      {
-        path:"/about",
-        element:<About/>,
-      },
-      {
-        path:"/contact",
-        element:<Contact/>,
-      },
-      {
-        path:"/grocery",
-        element:(
-        <Suspense fallback={<h1>Loading...</h1>}>
-          <Grocery/>
-        </Suspense>
-        ),
-      },
-      {
-        path:"/restaurants/:resId",
-        element:<RestaurantMenu/>,
-      },
-    ],
-    errorElement:<Error/>,
-  },
-  
+
+const appRouter = createBrowserRouter([
+{
+  path:"/",
+  element:<AppLayout/>,
+  children:[
+    {
+      path:"/",
+      element:<Body/>,
+    },
+    {
+      path:"/about",
+      element:
+      <Suspense fallback={<h1>Loading...</h1>}>
+      <About/>,
+      </Suspense>
+    },
+    {
+      path:"/contact",
+      element:<Contact/>,
+    },
+    {
+      path:"/restaurants/:resId",
+      element:<RestaurantMenu/>,
+    },
+    {
+      path:"/Grocery",
+      element:
+      <Suspense fallback={<h1>Loading...</h1>}>
+      <Grocery/>,
+      </Suspense>
+    }
+  ],
+  errorElement:<Error/>,
+},
 ]);
-
-
-
-// const root = ReactDOM.createRoot(document.getElementById("root"));
-// root.render(<AppLayout />);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<RouterProvider router={appRouter}/>);
+// const container = document.getElementById("root");
+// const root = createRoot(container);
+// root.render(<AppLayout />);
+
+// const rootElement = document.getElementById("root");
+// ReactDOM.render(<AppLayout />, rootElement);
